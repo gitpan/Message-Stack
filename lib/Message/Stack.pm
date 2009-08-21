@@ -5,7 +5,7 @@ use MooseX::AttributeHelpers;
 use Carp qw(croak);
 use Check::ISA;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 has messages => (
     metaclass => 'Collection::Array',
@@ -16,13 +16,15 @@ has messages => (
         clear => 'reset',
         count => 'count',
         empty => 'has_messages',
+        find => '_find_message',
         first => 'first_message',
+        grep => '_grep_messages',
         get => 'get_message',
         last => 'last_message',
     }
 );
 
-sub add_to_messages {
+sub add {
     my ($self, $message) = @_;
 
     return unless defined($message);
@@ -37,36 +39,36 @@ sub add_to_messages {
     }
 }
 
+sub get_messages_for_id {
+    my ($self, $id) = @_;
+
+    return $self->search(sub { $_[0]->id eq $id if $_[0]->has_id });
+}
+
 sub get_messages_for_level {
     my ($self, $level) = @_;
 
-    return 0 unless $self->has_messages;
-
-    my @messages = ();
-    foreach my $m (@{ $self->messages }) {
-        next unless defined($m->level);
-        push(@messages, $m) if $m->level eq $level;
-    }
-
-    return Message::Stack->new(
-        messages => \@messages
-    );
+    return $self->search(sub { $_[0]->level eq $level if $_[0]->has_level });
 }
 
 sub get_messages_for_scope {
     my ($self, $scope) = @_;
 
+    return $self->search(sub { $_[0]->scope eq $scope if $_[0]->has_scope });
+}
+
+sub get_messages_for_subject {
+    my ($self, $subject) = @_;
+
+    return $self->search(sub { $_[0]->subject eq $subject if $_[0]->has_subject });
+}
+
+sub has_messages_for_id {
+    my ($self, $id) = @_;
+
     return 0 unless $self->has_messages;
 
-    my @messages = ();
-    foreach my $m (@{ $self->messages }) {
-        next unless defined($m->scope);
-        push(@messages, $m) if $m->scope eq $scope;
-    }
-
-    return Message::Stack->new(
-        messages => \@messages
-    );
+    return $self->get_messages_for_id($id)->count ? 1 : 0;
 }
 
 sub has_messages_for_level {
@@ -74,12 +76,7 @@ sub has_messages_for_level {
 
     return 0 unless $self->has_messages;
 
-    foreach my $m (@{ $self->messages }) {
-        next unless defined($m->level);
-        return 1 if $m->level eq $level;
-    }
-
-    return 0;
+    return $self->get_messages_for_level($level)->count ? 1 : 0;
 }
 
 sub has_messages_for_scope {
@@ -87,14 +84,23 @@ sub has_messages_for_scope {
 
     return 0 unless $self->has_messages;
 
-    foreach my $m (@{ $self->messages }) {
-        next unless defined($m->scope);
-        return 1 if $m->scope eq $scope;
-    }
-
-    return 0;
+    return $self->get_messages_for_scope($scope)->count ? 1 : 0;
 }
 
+sub has_messages_for_subject {
+    my ($self, $subject) = @_;
+
+    return 0 unless $self->has_messages;
+
+    return $self->get_messages_for_subject($subject)->count ? 1 : 0;
+}
+
+sub search {
+    my ($self, $coderef) = @_;
+
+    my @messages = $self->_grep_messages($coderef);
+    return Message::Stack->new(messages => \@messages);
+}
 
 __PACKAGE__->meta->make_immutable;
 no Moose;
@@ -110,32 +116,43 @@ Message::Stack - Deal with a "stack" of messages
 
   my $stack = Message::Stack->new;
 
-  $stack->add_to_messages(Message::Stack::Message->new(
+  $stack->add(Message::Stack::Message->new(
       id        => 'something_happened',
       level     => 'error',
       scope     => 'login_form',
       subject   => 'username',
       text      => 'Something happened!'
   ));
+  # Or... for those that want to type less
+  $stack->add({
+      id        => 'something_else_happened',
+      level     => 'error',
+      scope     => 'login_form',
+      subject   => 'password',
+      text      => 'Something else happened!'
+  });
+  
   ...
   my $errors = $stack->get_messages_for_level($error);
   # Or
   my $login_form_errors = $stack->get_messges_for_scope('login_form');
+  $login_form_errors->get_messages_for_id('username');
+  print "Username has ".$login_form_errors->count." errors.\n";
 
 =head1 DESCRIPTION
 
 Message::Stack provides a mechanism for storing messages until they can be
 consumed.  A stack is used to retain order of occurrence.  Each message may
-have a level, scope, subject and text.  Consult the documentation for
+have a id, level, scope, subject and text.  Consult the documentation for
 L<Message::Stack::Message> for an explanation of these attributes.
 
 This is not a logging mechanism.  The original use was to store various errors
 or messages that occur during processing for later display in a web
-application.  The messages are added via C<add_message>.
+application.  The messages are added via C<add>.
 
 =head1 METHODS
 
-=head2 add_to_messages ($message)
+=head2 add ($message)
 
 Adds the supplied message to the stack.  C<$message> may be either a
 L<Message::Stack::Message> object or a hashref with similar keys.
@@ -148,25 +165,48 @@ Returns the number of messages in the stack.
 
 Returns the first message (if there is one, else undef)
 
+head2 search (CODEREF)
+
+Returns a Message::Stack containing messages that return true when passed
+to the coderef argument.
+
+  $stack->find( sub { $_[0]->id eq 'someid' } )
+
 =head2 get_message ($index)
 
 Get the message at the supplied index.
 
+=head2 get_messages_for_id ($id)
+
+Returns a new Message::Stack containing only the message objects with the
+supplied id. If there are no messages for that level then the stack
+returned will have no messages.
+
 =head2 get_messages_for_level ($level)
 
-Returns a new Message::Stack containing only the  message objects with the
+Returns a new Message::Stack containing only the message objects with the
 supplied level. If there are no messages for that level then the stack
 returned will have no messages.
 
 =head2 get_messages_for_scope ($scope)
 
-Returns a new Message::Stack containing only the  message objects with the
+Returns a new Message::Stack containing only the message objects with the
 supplied scope. If there are no messages for that scope then the stack
+returned will have no messages.
+
+=head2 get_messages_for_subject ($subject)
+
+Returns a new Message::Stack containing only the message objects with the
+supplied subject. If there are no messages for that subject then the stack
 returned will have no messages.
 
 =head2 has_messages
 
 Returns true if there are messages in the stack, else false
+
+=head2 has_messages_for_id ($id)
+
+Returns true if there are messages with the supplied id.
 
 =head2 has_messages_for_level ($level)
 
@@ -175,6 +215,10 @@ Returns true if there are messages with the supplied level.
 =head2 has_messages_for_scope ($scope)
 
 Returns true if there are messages with the supplied scope.
+
+=head2 has_messages_for_subject ($subject)
+
+Returns true if there are messages with the supplied subject.
 
 =head2 last_message
 
