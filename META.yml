@@ -22,6 +22,7 @@ requires:
   Check::ISA: 0.04
   Moose: 0.87
   MooseX::AttributeHelpers: 0.20
+  MooseX::Storage: 0.21
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.02
+version: 0.03
