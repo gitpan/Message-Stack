@@ -7,7 +7,7 @@ use Check::ISA;
 use MooseX::Storage;
 use Message::Stack::Message
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 with Storage('format' => 'JSON', io => 'File');
 
@@ -167,7 +167,7 @@ Returns the number of messages in the stack.
 
 =head2 messages
 
-Returns the full list of messages for this stack.
+Returns the full arrayref of messages for this stack.
 
 =head2 first_message
 
