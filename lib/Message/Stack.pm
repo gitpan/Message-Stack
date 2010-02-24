@@ -1,30 +1,31 @@
 package Message::Stack;
 use Moose;
-use MooseX::AttributeHelpers;
 
 use Carp qw(croak);
-use Check::ISA;
 use MooseX::Storage;
-use Message::Stack::Message
+use MooseX::Types::Moose qw(HashRef);
+use Message::Stack::Message;
+use Message::Stack::Types qw(MessageStackMessage);
 
-our $VERSION = '0.13';
+our $VERSION = '0.14';
 
 with 'MooseX::Storage::Deferred';
 
 has messages => (
-    metaclass => 'Collection::Array',
+    traits => [ 'Array' ],
     is => 'rw',
     isa => 'ArrayRef[Message::Stack::Message]',
     default => sub { [] },
-    provides => {
-        clear => 'reset',
-        count => 'count',
-        empty => 'has_messages',
-        find => '_find_message',
-        first => 'first_message',
-        grep => '_grep_messages',
-        get => 'get_message',
-        last => 'last_message',
+    handles => {
+        reset           => 'clear',
+        count           => 'count',
+        has_messages    => 'count',
+        first           => [ get => 0 ],
+        first_message   => [ get => 0 ],
+        _grep_messages  => 'grep',
+        get_message     => 'get',
+        last            => [ get => -1 ],
+        last_message    => [ get => -1 ],
     }
 );
 
@@ -33,9 +34,9 @@ sub add {
 
     return unless defined($message);
 
-    if(obj($message, 'Message::Stack::Message')) {
+    if(is_MessageStackMessage($message)) {
         push(@{ $self->messages }, $message);
-    } elsif(ref($message) eq 'HASH') {
+    } elsif(is_HashRef($message)) {
         my $mess = Message::Stack::Message->new($message);
         push(@{ $self->messages }, $mess);
     } else {
@@ -46,25 +47,25 @@ sub add {
 sub for_id {
     my ($self, $id) = @_;
 
-    return $self->search(sub { $_[0]->id eq $id if $_[0]->has_id });
+    return $self->search(sub { $_->id eq $id if $_->has_id });
 }
 
 sub for_level {
     my ($self, $level) = @_;
 
-    return $self->search(sub { $_[0]->level eq $level if $_[0]->has_level });
+    return $self->search(sub { $_->level eq $level if $_->has_level });
 }
 
 sub for_scope {
     my ($self, $scope) = @_;
 
-    return $self->search(sub { $_[0]->scope eq $scope if $_[0]->has_scope });
+    return $self->search(sub { $_->scope eq $scope if $_->has_scope });
 }
 
 sub for_subject {
     my ($self, $subject) = @_;
 
-    return $self->search(sub { $_[0]->subject eq $subject if $_[0]->has_subject });
+    return $self->search(sub { $_->subject eq $subject if $_->has_subject });
 }
 
 sub has_id {
@@ -246,15 +247,21 @@ Returns the last message (if there is one, else undef)
 
 Cory G Watson, C<< <gphat at cpan.org> >>
 
-=head1 ACKNOWLEDGEMENTS
+=head1 CONTRIBUTORS
 
 Jay Shirley
+
+Stevan Little
+
+Justin Hunter
+
 Jon Wright
+
 Mike Eldridge
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2009 Cory G Watson, all rights reserved.
+Copyright 2010 Cory G Watson, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

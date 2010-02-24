@@ -7,11 +7,9 @@ license  'perl';
 
 build_requires 'Test::More' => '0.92';
 
-requires 'Check::ISA' => '0.04';
-requires 'Moose' => '0.87';
-requires 'MooseX::AttributeHelpers' => '0.20';
+requires 'Moose' => '0.90';
+requires 'MooseX::Types' => '0.21';
 requires 'MooseX::Storage' => '0.21';
-requires 'JSON::Any' => '1.22';
 
 WriteAll;
 
