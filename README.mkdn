@@ -4,7 +4,7 @@ Message::Stack - Deal with a "stack" of messages
 
 # VERSION
 
-version 0.20
+version 0.21
 
 # SYNOPSIS
 

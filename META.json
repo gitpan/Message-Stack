@@ -4,7 +4,7 @@
       "Cory G Watson <gphat@cpan.org>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Dist::Zilla version 4.200008, CPAN::Meta::Converter version 2.110930",
+   "generated_by" : "Dist::Zilla version 4.200007, CPAN::Meta::Converter version 2.110440",
    "license" : [
       "perl_5"
    ],
@@ -38,11 +38,13 @@
    },
    "release_status" : "stable",
    "resources" : {
+      "homepage" : "http://github.com/gphat/message-stack",
       "repository" : {
          "type" : "git",
-         "url" : "https://github.com/gphat/message-stack"
+         "url" : "http://github.com/gphat/message-stack",
+         "web" : "http://github.com/gphat/message-stack"
       }
    },
-   "version" : "0.20"
+   "version" : "0.21"
 }
 

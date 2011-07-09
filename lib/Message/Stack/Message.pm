@@ -1,6 +1,6 @@
 package Message::Stack::Message;
 BEGIN {
-  $Message::Stack::Message::VERSION = '0.20';
+  $Message::Stack::Message::VERSION = '0.21';
 }
 use Moose;
 
@@ -72,7 +72,7 @@ Message::Stack::Message - Message!
 
 =head1 VERSION
 
-version 0.20
+version 0.21
 
 =head1 SYNOPSIS
 

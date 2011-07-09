@@ -15,4 +15,3 @@ t/02-finders.t
 t/03-clearers.t
 t/release-pod-syntax.t
 t/release-synopsis.t
-weaver.ini
