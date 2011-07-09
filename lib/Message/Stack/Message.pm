@@ -1,10 +1,16 @@
 package Message::Stack::Message;
+BEGIN {
+  $Message::Stack::Message::VERSION = '0.20';
+}
 use Moose;
+
+# ABSTRACT: Message!
 
 use MooseX::Aliases;
 use MooseX::Storage;
 
 with 'MooseX::Storage::Deferred';
+
 
 has msgid => (
     is => 'rw',
@@ -13,11 +19,13 @@ has msgid => (
     alias => 'id'
 );
 
+
 has level => (
     is => 'rw',
     isa => 'Maybe[Str]',
     predicate => 'has_level'
 );
+
 
 has params => (
     is => 'rw',
@@ -25,17 +33,20 @@ has params => (
     predicate => 'has_params'
 );
 
+
 has scope => (
     is => 'rw',
     isa => 'Maybe[Str]',
     predicate => 'has_scope'
 );
 
+
 has subject => (
     is => 'rw',
     isa => 'Maybe[Str]',
     predicate => 'has_subject'
 );
+
 
 has text => (
     is => 'rw',
@@ -52,12 +63,16 @@ sub has_id {
 __PACKAGE__->meta->make_immutable;
 no Moose;
 1;
-
 __END__
+=pod
 
 =head1 NAME
 
-Message::Stack::Message - A Message
+Message::Stack::Message - Message!
+
+=head1 VERSION
+
+version 0.20
 
 =head1 SYNOPSIS
 
@@ -77,6 +92,8 @@ Message::Stack::Message - A Message
 
 The Message object formalizes the messages that are added to the stack.  None
 of the fields are required, as it's up to the developer to decide what to use.
+
+=head1 NOTES
 
 =head2 Note About msgid
 
@@ -121,13 +138,42 @@ field in a form.
 String containing the human readable form of the message.  Often used in
 situations when I18N is not required.
 
+=head1 METHODS
+
+=head2 has_msgid
+
+Returns true if this Message has a msgid.
+
+=head2 has_level
+
+Returns true if this Message has a level.
+
+=head2 has_params
+
+Returns true if this Message has params.
+
+=head2 has_scope
+
+Returns true if this Message has a scope.
+
+=head2 has_subject
+
+Returns true if this Message has a subject.
+
+=head2 has_text
+
+Returns true if this Message has text.
+
 =head1 AUTHOR
 
-Cory G Watson, C<< <gphat at cpan.org> >>
+Cory G Watson <gphat@cpan.org>
 
-=head1 COPYRIGHT & LICENSE
+=head1 COPYRIGHT AND LICENSE
 
-Copyright 2009 Cory G Watson, all rights reserved.
+This software is copyright (c) 2011 by Cory G Watson.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
