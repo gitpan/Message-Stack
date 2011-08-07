@@ -1,6 +1,6 @@
 package Message::Stack;
 BEGIN {
-  $Message::Stack::VERSION = '0.21';
+  $Message::Stack::VERSION = '0.22';
 }
 use Moose;
 
@@ -137,7 +137,7 @@ sub reset_scope {
 
     return 0 unless $self->has_messages;
 
-    my $filtered;
+    my $filtered = [];
     foreach my $message (@{$self->messages}) {
         next if($message->scope eq $scope);
         push @{$filtered}, $message;
@@ -152,7 +152,7 @@ sub reset_level {
 
     return 0 unless $self->has_messages;
 
-    my $filtered;
+    my $filtered = [];
     foreach my $message (@{$self->messages}) {
         next if($message->level eq $level);
         push @{$filtered}, $message;
@@ -167,7 +167,7 @@ sub reset_msgid {
 
     return 0 unless $self->has_messages;
 
-    my $filtered;
+    my $filtered = [];
     foreach my $message (@{$self->messages}) {
         next if($message->msgid eq $msgid);
         push @{$filtered}, $message;
@@ -182,7 +182,7 @@ sub reset_subject {
 
     return 0 unless $self->has_messages;
 
-    my $filtered;
+    my $filtered = [];
     foreach my $message (@{$self->messages}) {
         next if($message->subject eq $subject);
         push @{$filtered}, $message;
@@ -195,6 +195,7 @@ sub reset_subject {
 __PACKAGE__->meta->make_immutable;
 no Moose;
 1;
+
 __END__
 =pod
 
@@ -204,7 +205,7 @@ Message::Stack - Deal with a "stack" of messages
 
 =head1 VERSION
 
-version 0.21
+version 0.22
 
 =head1 SYNOPSIS
 
@@ -226,8 +227,8 @@ version 0.21
       text      => 'Something else happened!'
     });
 
-    ...
-    my $errors = $stack->for_level($error);
+    # ...
+    my $errors = $stack->for_level('error');
     # Or
     my $login_form_errors = $stack->for_scope('login_form');
     $login_form_errors->for_subject('username');
@@ -374,6 +375,8 @@ Justin Hunter
 Jon Wright
 
 Mike Eldridge
+
+Tomohiro Hosaka
 
 Andrew Nelson
 

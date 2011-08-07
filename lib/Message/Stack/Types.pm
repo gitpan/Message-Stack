@@ -1,6 +1,6 @@
 package Message::Stack::Types;
 BEGIN {
-  $Message::Stack::Types::VERSION = '0.21';
+  $Message::Stack::Types::VERSION = '0.22';
 }
 use MooseX::Types -declare => [ qw( MessageStackMessage ) ];
 
@@ -17,7 +17,7 @@ Message::Stack::Types
 
 =head1 VERSION
 
-version 0.21
+version 0.22
 
 =head1 AUTHOR
 

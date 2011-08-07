@@ -24,4 +24,4 @@ requires:
 resources:
   homepage: http://github.com/gphat/message-stack
   repository: http://github.com/gphat/message-stack
-version: 0.21
+version: 0.22

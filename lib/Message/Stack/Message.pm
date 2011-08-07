@@ -1,6 +1,6 @@
 package Message::Stack::Message;
 BEGIN {
-  $Message::Stack::Message::VERSION = '0.21';
+  $Message::Stack::Message::VERSION = '0.22';
 }
 use Moose;
 
@@ -72,7 +72,7 @@ Message::Stack::Message - Message!
 
 =head1 VERSION
 
-version 0.21
+version 0.22
 
 =head1 SYNOPSIS
 
@@ -82,7 +82,7 @@ version 0.21
     Message::Stack::Message->new(
         msgid => 'I18NName',
         level => 'error',
-        scope => 'loginform'
+        scope => 'loginform',
         subject => 'username',
         text => 'You forgot a password'
     )

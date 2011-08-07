@@ -4,7 +4,7 @@ Message::Stack - Deal with a "stack" of messages
 
 # VERSION
 
-version 0.21
+version 0.22
 
 # SYNOPSIS
 
@@ -26,8 +26,8 @@ version 0.21
       text      => 'Something else happened!'
     });
 
-    ...
-    my $errors = $stack->for_level($error);
+    # ...
+    my $errors = $stack->for_level('error');
     # Or
     my $login_form_errors = $stack->for_scope('login_form');
     $login_form_errors->for_subject('username');
@@ -174,6 +174,8 @@ Justin Hunter
 Jon Wright
 
 Mike Eldridge
+
+Tomohiro Hosaka
 
 Andrew Nelson
 
